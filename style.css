@@ -1,0 +1,125 @@
+/* style.css — LifeLink (Red / White / Cream theme) */
+
+/* Reset & base */
+* { box-sizing: border-box; }
+body {
+  font-family: "Poppins", "Segoe UI", Arial, sans-serif;
+  margin: 0;
+  background: #fffaf6; /* cream */
+  color: #3b0000;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Header / nav */
+.header-bar {
+  background: linear-gradient(90deg,#c41a1a,#d94a4a);
+  color: #fff;
+  padding: 14px 18px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.logo { width: 60px; height: 60px; object-fit: contain; border-radius:8px; background: #fff; padding:4px; }
+.header-title { font-size: 22px; font-weight:700; margin-right: auto; }
+
+.nav {
+  background: #fff4f4;
+  display:flex;
+  justify-content:center;
+  gap:14px;
+  padding:10px 0;
+  border-bottom: 1px solid #ffe6e6;
+}
+.nav a {
+  color:#8b0000;
+  text-decoration:none;
+  font-weight:600;
+  padding:6px 12px;
+  border-radius:8px;
+}
+.nav a.active, .nav a:hover { background:#c41a1a; color:#fff; }
+
+/* container / layout */
+.container { max-width:1100px; margin:26px auto; padding:0 18px; }
+.section { display:flex; gap:28px; align-items:flex-start; flex-wrap:wrap; padding:6px 0; }
+.text { flex:1 1 520px; min-width:260px; }
+.side-img { width:320px; max-width:38%; border-radius:12px; box-shadow:0 12px 28px rgba(196,26,26,0.12); object-fit:cover; }
+
+/* headings & text */
+h1,h2 { color:#b30000; margin:0 0 10px 0; }
+.lead { font-size:15.5px; line-height:1.6; margin-bottom:12px; color:#3b0000; }
+
+/* buttons */
+.btn {
+  display:inline-block;
+  background: linear-gradient(180deg,#b30000,#d32f2f);
+  color:#fff;
+  padding:10px 16px;
+  border-radius:10px;
+  text-decoration:none;
+  font-weight:700;
+  border: none;
+  cursor: pointer;
+}
+.btn.secondary {
+  background: #fff; color:#b30000; border:2px solid #b30000;
+}
+
+/* form / card */
+.form-card {
+  background:#fff8f8;
+  border-radius:12px;
+  padding:16px;
+  box-shadow:0 8px 20px rgba(163,0,0,0.06);
+  width:420px;
+}
+input, select, textarea {
+  width:100%;
+  padding:10px;
+  margin:8px 0;
+  border-radius:8px;
+  border:1px solid #f2caca;
+  font-size:15px;
+}
+textarea { min-height:100px; resize:vertical; }
+
+/* results/donor row */
+.result-list { margin-top:12px; }
+.donor-row {
+  background:#fff8f8;
+  border-left:6px solid #c62828;
+  padding:14px;
+  margin:12px 0;
+  border-radius:10px;
+  display:flex;
+  justify-content:space-between;
+  gap:12px;
+  align-items:center;
+  box-shadow:0 6px 18px rgba(163,0,0,0.06);
+}
+.donor-info { text-align:left; }
+.donor-actions { text-align:right; min-width:120px; }
+
+/* table (used minimally) */
+.table { width:100%; border-collapse: collapse; margin-top:12px; }
+.table th, .table td { padding:10px; border:1px solid #ffdede; text-align:left; }
+.table th { background:#c62828; color:#fff; }
+
+/* camps/hospitals card reuse */
+.card {
+  background:#fff3f3; border-left:6px solid #b30000; padding:14px; margin:12px 0; border-radius:10px;
+  box-shadow:0 6px 12px rgba(163,0,0,0.05);
+}
+
+/* slogan & footer */
+.slogan { color:#b30000; font-weight:700; margin-top:18px; text-align:center; }
+.footer { background:#b30000; color:#fff; text-align:center; padding:12px 8px; margin-top:28px; font-weight:700; }
+
+/* responsive */
+@media (max-width:900px) {
+  .section { flex-direction:column; align-items:center; }
+  .side-img { width:260px; max-width:90%; }
+  .form-card { width:100%; max-width:520px; }
+  .donor-row { flex-direction:column; align-items:flex-start; }
+}
