@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Remove Record | LifeLink</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+  <!-- Header -->
+  <div class="header-bar">
+    <img src="images/small_logo.png" alt="LifeLink" class="logo">
+    <div class="header-title">LifeLink – Blood Donation & Emergency Portal</div>
+  </div>
+
+  <!-- Navigation Bar -->
+  <div class="nav">
+    <a href="index.html">Home</a>
+    <a href="register.html">Register</a>
+    <a href="find.html">Find Donor</a>
+    <a href="emergency.html">Emergency</a>
+    <a href="camp.html">Camps</a>
+    <a href="hospital.html">Hospitals</a>
+    <a href="contact.html">Contact</a>
+    <a href="remove_record.html" class="active">Remove Record</a>
+  </div>
+
+  <!-- Main Section -->
+  <div class="container">
+    <h2>Remove Record</h2>
+
+    <form id="removeForm">
+      <label for="type">Select Record Type:</label>
+      <select id="type" required>
+        <option value="">-- Choose Type --</option>
+        <option value="donors">Donor</option>
+        <option value="hospitals">Hospital</option>
+        <option value="camps">Camp</option>
+      </select>
+
+      <label for="name">Enter Name:</label>
+      <input type="text" id="name" placeholder="Full name" required>
+
+      <label for="contact">Enter Contact No:</label>
+      <input type="text" id="contact" placeholder="Phone number" required>
+
+      <button type="submit" class="btn">Remove Record</button>
+    </form>
+
+    <p id="msg" class="message"></p>
+  </div>
+
+  <!-- Script -->
+  <script>
+    const form = document.getElementById("removeForm");
+    const msg = document.getElementById("msg");
+
+    form.addEventListener("submit", (e) => {
+      e.preventDefault();
+
+      const type = document.getElementById("type").value;
+      const name = document.getElementById("name").value.trim();
+      const contact = document.getElementById("contact").value.trim();
+
+      if (!type) {
+        alert("⚠ Please select a record type!");
+        return;
+      }
+
+      let data = JSON.parse(localStorage.getItem(type)) || [];
+
+      const filtered = data.filter(
+        (item) => item.name !== name || item.contact !== contact
+      );
+
+      if (filtered.length === data.length) {
+        msg.textContent = "❌ No matching record found!";
+        msg.style.color = "red";
+      } else {
+        localStorage.setItem(type, JSON.stringify(filtered));
+        msg.textContent = "✅ Record removed successfully!";
+        msg.style.color = "green";
+      }
+
+      form.reset();
+      setTimeout(() => (msg.textContent = ""), 3000);
+    });
+  </script>
+</body>
+</html>
