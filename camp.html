@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>LifeLink — Camps</title>
+  <link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+  <div class="header-bar">
+    <img src="images/small_logo.png" alt="LifeLink" class="logo">
+    <div class="header-title">Blood Donation Camps</div>
+  </div>
+
+  <div class="nav">
+    <a href="index.html">Home</a>
+    <a href="register.html">Register</a>
+    <a href="find.html">Find Donor</a>
+    <a href="emergency.html">Emergency</a>
+    <a href="camp.html" class="active">Camps</a>
+    <a href="hospital.html">Hospitals</a>
+    <a href="contact.html">Contact</a>
+  </div>
+
+  <div class="container">
+    <div class="section">
+      <div class="text">
+        <h2>Upcoming Blood Donation Camps</h2>
+        <p class="lead">See upcoming events or register new ones as an organizer.</p>
+
+        <div id="camp_list">
+          <div class="card">
+            <h3>Hope Foundation Blood Drive</h3>
+            <p>📍 Bengaluru</p>
+            <p>📅 12th November 2025</p>
+            <p>☎ 9988776655</p>
+          </div>
+          <div class="card">
+            <h3>LifeSaver Camp</h3>
+            <p>📍 Tumakuru</p>
+            <p>📅 18th November 2025</p>
+            <p>☎ 8877665544</p>
+          </div>
+        </div>
+
+        <h3 style="margin-top:20px">Register a New Camp (Organizer)</h3>
+        <div class="form-card">
+          <form id="campForm">
+            <input id="camp_org" placeholder="Organizer name" required />
+            <input id="camp_date" type="date" required />
+            <input id="camp_venue" placeholder="Venue" required />
+            <input id="camp_contact" placeholder="Contact number" required />
+            <button type="submit" class="btn">Add Camp</button>
+          </form>
+          <p id="camp_success" class="success-msg"></p>
+        </div>
+
+        <p class="slogan">“The best gift is the gift of life — join a camp, donate.”</p>
+      </div>
+
+      <img class="side-img" src="images/camps.jpg" alt="Camps">
+    </div>
+  </div>
+
+  <div class="footer">© 2025 LifeLink</div>
+
+  <script>
+    const campForm = document.getElementById("campForm");
+    const campList = document.getElementById("camp_list");
+    const campMsg = document.getElementById("camp_success");
+
+    campForm.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const org = campForm.camp_org.value;
+      const date = campForm.camp_date.value;
+      const venue = campForm.camp_venue.value;
+      const contact = campForm.camp_contact.value;
+
+      const newCamp = document.createElement("div");
+      newCamp.classList.add("card");
+      newCamp.innerHTML = `<h3>${org}</h3>
+                           <p>📍 ${venue}</p>
+                           <p>📅 ${date}</p>
+                           <p>☎ ${contact}</p>`;
+      campList.appendChild(newCamp);
+
+      campMsg.textContent = "✅ Camp added successfully!";
+      campForm.reset();
+
+      setTimeout(() => (campMsg.textContent = ""), 3000);
+    });
+  </script>
+</body>
+</html>

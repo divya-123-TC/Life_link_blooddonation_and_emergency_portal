@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>LifeLink — Hospitals</title>
+  <link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+  <div class="header-bar">
+    <img src="images/small_logo.png" alt="LifeLink" class="logo">
+    <div class="header-title">Partner Hospitals</div>
+  </div>
+
+  <div class="nav">
+    <a href="index.html">Home</a>
+    <a href="register.html">Register</a>
+    <a href="find.html">Find Donor</a>
+    <a href="emergency.html">Emergency</a>
+    <a href="camp.html">Camps</a>
+    <a href="hospital.html" class="active">Hospitals</a>
+    <a href="contact.html">Contact</a>
+  </div>
+
+  <div class="container">
+    <div class="section">
+      <div class="text">
+        <h2>Hospitals with Blood Banks</h2>
+        <p class="lead">Call any hospital directly for blood availability or emergency help.</p>
+
+        <div id="hosp_list">
+          <div class="card">
+            <h3>CityCare Hospital</h3>
+            <p>📍 Bengaluru</p>
+            <p>☎ 9876543210</p>
+            <p>💉 Blood Groups: A+, O-, B+</p>
+            <a href="tel:9876543210" class="btn call-btn">📞 Call Now</a>
+          </div>
+          <div class="card">
+            <h3>LifeAid Medical Center</h3>
+            <p>📍 Mysuru</p>
+            <p>☎ 9123456789</p>
+            <p>💉 Blood Groups: AB+, O+, B-</p>
+            <a href="tel:9123456789" class="btn call-btn">📞 Call Now</a>
+          </div>
+        </div>
+
+        <h3 style="margin-top:20px">Add Hospital (Admin)</h3>
+        <div class="form-card">
+          <form id="hForm">
+            <input id="h_name" placeholder="Hospital name" required />
+            <input id="h_city" placeholder="City" required />
+            <input id="h_contact" placeholder="Contact number" required />
+            <input id="h_groups" placeholder="Available groups (comma separated)" />
+            <button type="submit" class="btn">Add Hospital</button>
+          </form>
+          <p id="h_success" class="success-msg"></p>
+        </div>
+
+        <p class="slogan">“Hospitals and donors together save lives.”</p>
+      </div>
+
+      <img class="side-img" src="images/hospital.jpeg" alt="Hospital">
+    </div>
+  </div>
+
+  <div class="footer">© 2025 LifeLink</div>
+
+  <script>
+    const hForm = document.getElementById("hForm");
+    const hList = document.getElementById("hosp_list");
+    const hMsg = document.getElementById("h_success");
+
+    hForm.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const name = hForm.h_name.value;
+      const city = hForm.h_city.value;
+      const contact = hForm.h_contact.value;
+      const groups = hForm.h_groups.value;
+
+      const newCard = document.createElement("div");
+      newCard.classList.add("card");
+      newCard.innerHTML = `
+        <h3>${name}</h3>
+        <p>📍 ${city}</p>
+        <p>☎ ${contact}</p>
+        <p>💉 Blood Groups: ${groups}</p>
+        <a href="tel:${contact}" class="btn call-btn">📞 Call Now</a>
+      `;
+      hList.appendChild(newCard);
+
+      hMsg.textContent = "✅ Hospital added successfully!";
+      hForm.reset();
+
+      setTimeout(() => (hMsg.textContent = ""), 3000);
+    });
+  </script>
+</body>
+</html>

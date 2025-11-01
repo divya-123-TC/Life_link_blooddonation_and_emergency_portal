@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>LifeLink — Emergency</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="header-bar">
+    <img src="images/small_logo.png" alt="LifeLink" class="logo" />
+    <div class="header-title">Emergency — Quick Donor Finder</div>
+  </div>
+
+  <div class="nav">
+    <a href="index.html">Home</a>
+    <a href="register.html">Register</a>
+    <a href="find.html">Find Donor</a>
+    <a href="emergency.html" class="active">Emergency</a>
+    <a href="camp.html">Camps</a>
+    <a href="hospital.html">Hospitals</a>
+    <a href="contact.html">Contact</a>
+  </div>
+
+  <div class="container">
+    <div class="section">
+      <div class="text">
+        <h2>Emergency Donor Search</h2>
+        <p class="lead">
+          Type the <strong>city</strong> to find available donors instantly.
+        </p>
+
+        <div class="form-card">
+          <form id="emForm">
+            <input id="em_city" placeholder="Enter city (e.g., Bengaluru)" required />
+            <button type="submit" class="btn">Find Donors</button>
+          </form>
+        </div>
+
+        <div id="em_results" class="result-list"></div>
+
+        <p class="slogan">“Act fast, save lives — every drop matters.”</p>
+      </div>
+
+      <img class="side-img" src="images/emergency_bg.jpg" alt="Emergency" />
+    </div>
+  </div>
+
+  <div class="footer">© 2025 LifeLink</div>
+
+  <script>
+    const emForm = document.getElementById("emForm");
+    const emResults = document.getElementById("em_results");
+
+    emForm.addEventListener("submit", (e) => {
+      e.preventDefault();
+
+      const cityInput = document.getElementById("em_city").value.trim();
+      if (!cityInput) {
+        emResults.innerHTML = "<p class='no-result'>⚠ Please enter a city.</p>";
+        return;
+      }
+
+      const donors = JSON.parse(localStorage.getItem("donors")) || [];
+      const filtered = donors.filter(
+        (d) =>
+          d.city &&
+          d.city.toLowerCase() === cityInput.toLowerCase() &&
+          d.availability === "Available"
+      );
+
+      emResults.innerHTML = "";
+
+      if (filtered.length === 0) {
+        emResults.innerHTML =
+          "<p class='no-result'>❌ No available donors found in this city.</p>";
+        return;
+      }
+
+      filtered.forEach((d) => {
+        const card = document.createElement("div");
+        card.classList.add("card");
+        card.innerHTML = `
+          <h3>${d.name}</h3>
+          <p>🩸 ${d.group}</p>
+          <p>📍 ${d.city}</p>
+          <p>☎ ${d.contact}</p>
+          <a href="tel:${d.contact}" class="btn call-btn">📞 Call Now</a>
+        `;
+        emResults.appendChild(card);
+      });
+    });
+  </script>
+</body>
+</html>

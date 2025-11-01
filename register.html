@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>LifeLink — Register</title>
+  <link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+  <div class="header-bar">
+    <img src="images/small_logo.png" alt="LifeLink" class="logo">
+    <div class="header-title">Register as Donor</div>
+  </div>
+
+  <div class="nav">
+    <a href="index.html">Home</a>
+    <a href="register.html" class="active">Register</a>
+    <a href="find.html">Find Donor</a>
+    <a href="emergency.html">Emergency</a>
+    <a href="camp.html">Camps</a>
+    <a href="hospital.html">Hospitals</a>
+    <a href="contact.html">Contact</a>
+  </div>
+
+  <div class="container">
+    <div class="section">
+      <div class="text">
+        <h2>Join as a Blood Donor</h2>
+        <p class="lead">Please fill correct details. Donors must be at least <strong>18 years</strong> old.</p>
+
+        <div class="form-card">
+          <form id="donorForm">
+            <input id="name" placeholder="Full name" required />
+            <input id="age" type="number" placeholder="Age (must be 18+)" required />
+            <select id="bloodGroup" required>
+              <option value="">Select blood group</option>
+              <option>A+</option><option>A-</option>
+              <option>B+</option><option>B-</option>
+              <option>AB+</option><option>AB-</option>
+              <option>O+</option><option>O-</option>
+            </select>
+            <input id="city" placeholder="City" required />
+            <input id="contact" placeholder="Contact number" required />
+            <select id="availability" required>
+              <option value="Available">Available</option>
+              <option value="Unavailable">Unavailable</option>
+            </select>
+            <button type="submit" class="btn">Submit Registration</button>
+          </form>
+          <p id="successMsg" class="success-msg"></p>
+        </div>
+
+        <p class="slogan">“Your blood is a gift — be someone’s hero.”</p>
+      </div>
+
+      <img class="side-img" src="images/register_bg.jpg" alt="Register">
+    </div>
+  </div>
+
+  <div class="footer">© 2025 LifeLink</div>
+
+  <script>
+    const form = document.getElementById("donorForm");
+    const msg = document.getElementById("successMsg");
+
+    form.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const donor = {
+        name: form.name.value,
+        age: form.age.value,
+        group: form.bloodGroup.value,
+        city: form.city.value,
+        contact: form.contact.value,
+        availability: form.availability.value
+      };
+
+      let donors = JSON.parse(localStorage.getItem("donors")) || [];
+      donors.push(donor);
+      localStorage.setItem("donors", JSON.stringify(donors));
+
+      msg.textContent = "✅ Donor registered successfully!";
+      form.reset();
+      setTimeout(() => (msg.textContent = ""), 3000);
+    });
+  </script>
+</body>
+</html>
