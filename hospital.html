@@ -65,35 +65,50 @@
   </div>
 
   <div class="footer">© 2025 LifeLink</div>
+<script>
+  const hForm = document.getElementById("hForm");
+  const hList = document.getElementById("hosp_list");
+  const hMsg = document.getElementById("h_success");
 
-  <script>
-    const hForm = document.getElementById("hForm");
-    const hList = document.getElementById("hosp_list");
-    const hMsg = document.getElementById("h_success");
-
-    hForm.addEventListener("submit", (e) => {
-      e.preventDefault();
-      const name = hForm.h_name.value;
-      const city = hForm.h_city.value;
-      const contact = hForm.h_contact.value;
-      const groups = hForm.h_groups.value;
-
-      const newCard = document.createElement("div");
-      newCard.classList.add("card");
-      newCard.innerHTML = `
-        <h3>${name}</h3>
-        <p>📍 ${city}</p>
-        <p>☎ ${contact}</p>
-        <p>💉 Blood Groups: ${groups}</p>
-        <a href="tel:${contact}" class="btn call-btn">📞 Call Now</a>
+  function displayHospitals() {
+    hList.innerHTML = "";
+    const hospitals = JSON.parse(localStorage.getItem("hospitals")) || [];
+    hospitals.forEach(h => {
+      const card = document.createElement("div");
+      card.classList.add("card");
+      card.innerHTML = `
+        <h3>${h.name}</h3>
+        <p>📍 ${h.city}</p>
+        <p>☎ ${h.contact}</p>
+        <p>💉 Blood Groups: ${h.groups}</p>
+        <a href="tel:${h.contact}" class="btn call-btn">📞 Call Now</a>
       `;
-      hList.appendChild(newCard);
-
-      hMsg.textContent = "✅ Hospital added successfully!";
-      hForm.reset();
-
-      setTimeout(() => (hMsg.textContent = ""), 3000);
+      hList.appendChild(card);
     });
-  </script>
+  }
+
+  hForm.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const hospital = {
+      name: hForm.h_name.value,
+      city: hForm.h_city.value,
+      contact: hForm.h_contact.value,
+      groups: hForm.h_groups.value
+    };
+
+    let hospitals = JSON.parse(localStorage.getItem("hospitals")) || [];
+    hospitals.push(hospital);
+    localStorage.setItem("hospitals", JSON.stringify(hospitals));
+
+    hMsg.textContent = "✅ Hospital added successfully!";
+    hForm.reset();
+    displayHospitals();
+    setTimeout(() => (hMsg.textContent = ""), 3000);
+  });
+
+  displayHospitals();
+</script>
+  
 </body>
+
 </html>
