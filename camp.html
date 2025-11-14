@@ -6,6 +6,7 @@
   <title>LifeLink — Camps</title>
   <link rel="stylesheet" href="style.css"/>
 </head>
+
 <body>
   <div class="header-bar">
     <img src="images/small_logo.png" alt="LifeLink" class="logo">
@@ -20,38 +21,27 @@
     <a href="camp.html" class="active">Camps</a>
     <a href="hospital.html">Hospitals</a>
     <a href="contact.html">Contact</a>
-    <a href="remove_record.html">Remove Record</a>
+    <a href="admin_login.html">Admin Login</a>
   </div>
 
   <div class="container">
     <div class="section">
       <div class="text">
         <h2>Upcoming Blood Donation Camps</h2>
-        <p class="lead">See upcoming events or register new ones as an organizer.</p>
+        <p class="lead">Approved upcoming camps are shown below.  
+        New camp requests require admin approval.</p>
 
-        <div id="camp_list">
-          <div class="card">
-            <h3>Hope Foundation Blood Drive</h3>
-            <p>📍 Bengaluru</p>
-            <p>📅 12th November 2025</p>
-            <p>☎ 9988776655</p>
-          </div>
-          <div class="card">
-            <h3>LifeSaver Camp</h3>
-            <p>📍 Tumakuru</p>
-            <p>📅 18th November 2025</p>
-            <p>☎ 8877665544</p>
-          </div>
-        </div>
+        <!-- Approved camps -->
+        <div id="camp_list"></div>
 
-        <h3 style="margin-top:20px">Register a New Camp (Organizer)</h3>
+        <h3 style="margin-top:20px">Request a New Camp (Organizer)</h3>
         <div class="form-card">
           <form id="campForm">
             <input id="camp_org" placeholder="Organizer name" required />
             <input id="camp_date" type="date" required />
             <input id="camp_venue" placeholder="Venue" required />
             <input id="camp_contact" placeholder="Contact number" required />
-            <button type="submit" class="btn">Add Camp</button>
+            <button type="submit" class="btn">Submit Request</button>
           </form>
           <p id="camp_success" class="success-msg"></p>
         </div>
@@ -64,48 +54,87 @@
   </div>
 
   <div class="footer">© 2025 LifeLink</div>
-<script>
-  const campForm = document.getElementById("campForm");
-  const campList = document.getElementById("camp_list");
-  const campMsg = document.getElementById("camp_success");
 
-  function displayCamps() {
-    campList.innerHTML = "";
-    const camps = JSON.parse(localStorage.getItem("camps")) || [];
-    camps.forEach(c => {
-      const div = document.createElement("div");
-      div.classList.add("card");
-      div.innerHTML = `<h3>${c.org}</h3>
-                       <p>📍 ${c.venue}</p>
-                       <p>📅 ${c.date}</p>
-                       <p>☎ ${c.contact}</p>`;
-      campList.appendChild(div);
-    });
-  }
+  <script>
+  document.addEventListener("DOMContentLoaded", () => {
 
-  campForm.addEventListener("submit", (e) => {
-    e.preventDefault();
-    const camp = {
-      org: campForm.camp_org.value,
-      date: campForm.camp_date.value,
-      venue: campForm.camp_venue.value,
-      contact: campForm.camp_contact.value
-    };
+    const campForm = document.getElementById("campForm");
+    const campList = document.getElementById("camp_list");
+    const campMsg = document.getElementById("camp_success");
 
-    let camps = JSON.parse(localStorage.getItem("camps")) || [];
-    camps.push(camp);
-    localStorage.setItem("camps", JSON.stringify(camps));
+    // ❗ Remove expired camps automatically
+    function removeExpiredCamps() {
+      let camps = JSON.parse(localStorage.getItem("camps")) || [];
+      const today = new Date().toISOString().split("T")[0]; // yyyy-mm-dd format
 
-    campMsg.textContent = "✅ Camp added successfully!";
-    campForm.reset();
-    displayCamps();
-    setTimeout(() => (campMsg.textContent = ""), 3000);
+      // Keep only camps with future date or today
+      const updated = camps.filter(c => c.date >= today);
+
+      if (updated.length !== camps.length) {
+        localStorage.setItem("camps", JSON.stringify(updated));
+      }
+      return updated;
+    }
+
+    // Display only approved and non-expired camps
+    function displayApprovedCamps() {
+      campList.innerHTML = "";
+      const camps = removeExpiredCamps();
+
+      if (camps.length === 0) {
+        campList.innerHTML = '<p class="no-result">No upcoming camps.</p>';
+        return;
+      }
+
+      camps.forEach(c => {
+        const div = document.createElement("div");
+        div.classList.add("card");
+        div.innerHTML = `
+          <h3>${c.org}</h3>
+          <p>📍 ${c.venue}</p>
+          <p>📅 ${c.date}</p>
+          <p>☎ ${c.contact}</p>
+        `;
+        campList.appendChild(div);
+      });
+    }
+
+    // Submit → save request to pending_camps
+    if (campForm) {
+      campForm.addEventListener("submit", (e) => {
+        e.preventDefault();
+
+        const pendingCamp = {
+          org: campForm.camp_org.value.trim(),
+          date: campForm.camp_date.value,
+          venue: campForm.camp_venue.value.trim(),
+          contact: campForm.camp_contact.value.trim(),
+          requestedAt: new Date().toISOString()
+        };
+
+        // Basic validation
+        if (!pendingCamp.org || !pendingCamp.date || !pendingCamp.venue || !pendingCamp.contact) {
+          campMsg.textContent = "Please fill all fields.";
+          campMsg.style.color = "red";
+          setTimeout(() => campMsg.textContent = "", 3000);
+          return;
+        }
+
+        const pending = JSON.parse(localStorage.getItem("pending_camps")) || [];
+        pending.push(pendingCamp);
+        localStorage.setItem("pending_camps", JSON.stringify(pending));
+
+        campMsg.textContent = "✅ Request submitted — waiting admin approval.";
+        campMsg.style.color = "green";
+        campForm.reset();
+        setTimeout(() => campMsg.textContent = "", 3500);
+      });
+    }
+
+    // Initial display
+    displayApprovedCamps();
   });
+  </script>
 
-  displayCamps();
-</script>
-  
 </body>
-
 </html>
-
