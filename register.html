@@ -20,7 +20,7 @@
     <a href="camp.html">Camps</a>
     <a href="hospital.html">Hospitals</a>
     <a href="contact.html">Contact</a>
-    <a href="remove_record.html">Remove Record</a>
+    <a href="admin_login.html">Admin Login</a>
   </div>
 
   <div class="container">
@@ -46,6 +46,7 @@
               <option value="Available">Available</option>
               <option value="Unavailable">Unavailable</option>
             </select>
+
             <button type="submit" class="btn">Submit Registration</button>
           </form>
           <p id="successMsg" class="success-msg"></p>
@@ -59,6 +60,7 @@
   </div>
 
   <div class="footer">© 2025 LifeLink</div>
+
 <script>
   const form = document.getElementById("donorForm");
   const msg = document.getElementById("successMsg");
@@ -78,7 +80,7 @@
     const donor = {
       name: form.name.value,
       age: age,
-      group: form.bloodGroup.value,
+      bloodGroup: form.bloodGroup.value,
       city: form.city.value,
       contact: form.contact.value,
       availability: form.availability.value
@@ -94,9 +96,6 @@
     setTimeout(() => (msg.textContent = ""), 3000);
   });
 </script>
-  
+
 </body>
-
 </html>
-
-
