@@ -1,9 +1,24 @@
 document.addEventListener("DOMContentLoaded", () => {
-  // ---------- Donor Registration ----------
+
+  // Storage Keys
+  const KEY_DONORS = "donors";                     // approved donors
+  const KEY_CAMPS = "camps";                       // approved camps
+  const KEY_HOSPITALS = "hospitals";               // approved hospitals
+
+  const KEY_PENDING_CAMPS = "pending_camps";       // pending camps
+  const KEY_PENDING_HOSPITALS = "pending_hospitals"; // pending hospitals
+
+  // ---------- 1. DONOR REGISTRATION ----------
   const donorForm = document.getElementById("donorForm");
   if (donorForm) {
     donorForm.addEventListener("submit", (e) => {
       e.preventDefault();
+
+      const age = parseInt(donorForm.age.value);
+      if (isNaN(age) || age < 18) {
+        alert("⚠ Donor must be at least 18 years old.");
+        return;
+      }
 
       const donor = {
         name: donorForm.name.value,
@@ -14,26 +29,28 @@ document.addEventListener("DOMContentLoaded", () => {
         availability: donorForm.availability.value
       };
 
-      let donors = JSON.parse(localStorage.getItem("donors")) || [];
+      let donors = JSON.parse(localStorage.getItem(KEY_DONORS)) || [];
       donors.push(donor);
-      localStorage.setItem("donors", JSON.stringify(donors));
+      localStorage.setItem(KEY_DONORS, JSON.stringify(donors));
 
       alert("✅ Donor registered successfully!");
       donorForm.reset();
     });
   }
 
-  // ---------- Find Donor ----------
+  // ---------- 2. FIND DONOR ----------
   const findForm = document.getElementById("findForm");
   if (findForm) {
     findForm.addEventListener("submit", (e) => {
       e.preventDefault();
+
       const group = document.getElementById("find_group").value;
-      const donors = JSON.parse(localStorage.getItem("donors")) || [];
+      const donors = JSON.parse(localStorage.getItem(KEY_DONORS)) || [];
       const resultDiv = document.getElementById("find_results");
       resultDiv.innerHTML = "";
 
       const matches = donors.filter(d => d.bloodGroup === group);
+
       if (matches.length === 0) {
         resultDiv.innerHTML = "<p>No donors found for this blood group.</p>";
       } else {
@@ -45,20 +62,23 @@ document.addEventListener("DOMContentLoaded", () => {
             <p>Age: ${d.age}</p>
             <p>City: ${d.city}</p>
             <p>Contact: ${d.contact}</p>
-            <p>Status: ${d.availability}</p>`;
+            <p>Status: ${d.availability}</p>
+            <a href="tel:${d.contact}" class="btn">Call Now</a>
+          `;
           resultDiv.appendChild(card);
         });
       }
     });
   }
 
-  // ---------- Emergency Search ----------
+  // ---------- 3. EMERGENCY SEARCH ----------
   const emForm = document.getElementById("emForm");
   if (emForm) {
     emForm.addEventListener("submit", (e) => {
       e.preventDefault();
+
       const city = document.getElementById("em_city").value.trim().toLowerCase();
-      const donors = JSON.parse(localStorage.getItem("donors")) || [];
+      const donors = JSON.parse(localStorage.getItem(KEY_DONORS)) || [];
       const resultDiv = document.getElementById("em_results");
       resultDiv.innerHTML = "";
 
@@ -70,42 +90,43 @@ document.addEventListener("DOMContentLoaded", () => {
         resultDiv.innerHTML = "<p>No available donors found in this city.</p>";
       } else {
         available.forEach(d => {
-          const card = document.createElement("div");
-          card.classList.add("card");
-          card.innerHTML = `
-            <h3>${d.name}</h3>
-            <p>Blood Group: ${d.bloodGroup}</p>
-            <p>Contact: ${d.contact}</p>`;
-          resultDiv.appendChild(card);
+          resultDiv.innerHTML += `
+            <div class="card">
+              <h3>${d.name}</h3>
+              <p>Blood Group: ${d.bloodGroup}</p>
+              <p>Contact: ${d.contact}</p>
+              <a href="tel:${d.contact}" class="btn">Call Now</a>
+            </div>
+          `;
         });
       }
     });
   }
 
-  // ---------- Blood Camp Registration ----------
+  // ---------- 4. BLOOD CAMP — USER SENDS REQUEST (NOT APPROVED) ----------
   const campForm = document.getElementById("campForm");
   if (campForm) {
     const campList = document.getElementById("camp_list");
-    let camps = JSON.parse(localStorage.getItem("camps")) || [];
+    const camps = JSON.parse(localStorage.getItem(KEY_CAMPS)) || [];
 
-    // Display saved camps on load
+    // Show only approved camps
     const displayCamps = () => {
       campList.innerHTML = "";
       camps.forEach(camp => {
-        const card = document.createElement("div");
-        card.classList.add("card");
-        card.innerHTML = `
-          <h3>${camp.org}</h3>
-          <p>📍 ${camp.venue}</p>
-          <p>📅 ${camp.date}</p>
-          <p>☎ ${camp.contact}</p>`;
-        campList.appendChild(card);
+        campList.innerHTML += `
+          <div class="card">
+            <h3>${camp.org}</h3>
+            <p>📍 ${camp.venue}</p>
+            <p>📅 ${camp.date}</p>
+            <p>☎ ${camp.contact}</p>
+          </div>`;
       });
     };
     displayCamps();
 
     campForm.addEventListener("submit", (e) => {
       e.preventDefault();
+
       const newCamp = {
         org: campForm.camp_org.value,
         date: campForm.camp_date.value,
@@ -113,40 +134,40 @@ document.addEventListener("DOMContentLoaded", () => {
         contact: campForm.camp_contact.value
       };
 
-      camps.push(newCamp);
-      localStorage.setItem("camps", JSON.stringify(camps));
-      displayCamps();
+      // Save to pending
+      const pending = JSON.parse(localStorage.getItem(KEY_PENDING_CAMPS)) || [];
+      pending.push(newCamp);
+      localStorage.setItem(KEY_PENDING_CAMPS, JSON.stringify(pending));
 
-      alert("✅ Camp added successfully!");
+      alert("⏳ Camp request submitted! Admin approval required.");
       campForm.reset();
     });
   }
 
-  // ---------- Hospital Registration ----------
+  // ---------- 5. HOSPITAL — USER SENDS REQUEST ----------
   const hForm = document.getElementById("hForm");
   if (hForm) {
     const hList = document.getElementById("hosp_list");
-    let hospitals = JSON.parse(localStorage.getItem("hospitals")) || [];
+    const hospitals = JSON.parse(localStorage.getItem(KEY_HOSPITALS)) || [];
 
-    // Display saved hospitals on load
     const displayHospitals = () => {
       hList.innerHTML = "";
       hospitals.forEach(h => {
-        const card = document.createElement("div");
-        card.classList.add("card");
-        card.innerHTML = `
-          <h3>${h.name}</h3>
-          <p>📍 ${h.city}</p>
-          <p>☎ ${h.contact}</p>
-          <p>💉 ${h.groups}</p>
-          <button class="btn" onclick="window.location.href='tel:${h.contact}'">Call Now</button>`;
-        hList.appendChild(card);
+        hList.innerHTML += `
+          <div class="card">
+            <h3>${h.name}</h3>
+            <p>📍 ${h.city}</p>
+            <p>☎ ${h.contact}</p>
+            <p>💉 ${h.groups}</p>
+            <a href="tel:${h.contact}" class="btn">Call Now</a>
+          </div>`;
       });
     };
     displayHospitals();
 
     hForm.addEventListener("submit", (e) => {
       e.preventDefault();
+
       const newHospital = {
         name: hForm.h_name.value,
         city: hForm.h_city.value,
@@ -154,12 +175,14 @@ document.addEventListener("DOMContentLoaded", () => {
         groups: hForm.h_groups.value
       };
 
-      hospitals.push(newHospital);
-      localStorage.setItem("hospitals", JSON.stringify(hospitals));
-      displayHospitals();
+      // Save to pending list
+      const pending = JSON.parse(localStorage.getItem(KEY_PENDING_HOSPITALS)) || [];
+      pending.push(newHospital);
+      localStorage.setItem(KEY_PENDING_HOSPITALS, JSON.stringify(pending));
 
-      alert("✅ Hospital added successfully!");
+      alert("⏳ Hospital request submitted! Admin approval required.");
       hForm.reset();
     });
   }
+
 });
