@@ -20,7 +20,7 @@
     <a href="camp.html">Camps</a>
     <a href="hospital.html">Hospitals</a>
     <a href="contact.html">Contact</a>
-    <a href="remove_record.html">Remove Record</a>
+    <a href="admin_login.html">Admin Login</a>
   </div>
 
   <div class="container">
@@ -58,11 +58,15 @@
 
     form.addEventListener("submit", (e) => {
       e.preventDefault();
-      const group = document.getElementById("find_group").value;
+
+      const group = document.getElementById("find_group").value.trim();
       const donors = JSON.parse(localStorage.getItem("donors")) || [];
-      const filtered = donors.filter(d => d.group === group);
+
+      // Using correct field name = bloodGroup
+      const filtered = donors.filter(d => d.bloodGroup === group);
 
       resultDiv.innerHTML = "";
+
       if (filtered.length === 0) {
         resultDiv.innerHTML = "<p class='no-result'>❌ No donors found for this blood group.</p>";
         return;
@@ -73,7 +77,7 @@
         card.classList.add("card");
         card.innerHTML = `
           <h3>${d.name}</h3>
-          <p>🩸 ${d.group}</p>
+          <p>🩸 ${d.bloodGroup}</p>
           <p>📍 ${d.city}</p>
           <p>☎ ${d.contact}</p>
           <p>Availability: ${d.availability}</p>
@@ -83,6 +87,6 @@
       });
     });
   </script>
-</body>
 
+</body>
 </html>
