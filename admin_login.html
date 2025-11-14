@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Admin Login — LifeLink</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+  <div class="header-bar">
+    <img src="images/small_logo.png" class="logo" />
+    <div class="header-title">Admin Login</div>
+  </div>
+
+  <div class="nav">
+    <a href="index.html">Home</a>
+    <a href="register.html">Register</a>
+    <a href="find.html">Find Donor</a>
+    <a href="emergency.html">Emergency</a>
+    <a href="camp.html">Camps</a>
+    <a href="hospital.html">Hospitals</a>
+    <a href="contact.html">Contact</a>
+    <a href="admin_login.html" class="active">Admin</a>
+  </div>
+
+  <div class="container">
+    <div class="section">
+      <div class="text">
+        <h2>Admin Login</h2>
+        <p class="lead">Enter admin credentials to access the dashboard.</p>
+
+        <div class="form-card">
+          <form id="adminLoginForm">
+            <input id="admin_user" placeholder="Username" required />
+            <input id="admin_pass" type="password" placeholder="Password" required />
+            <button type="submit" class="btn">Login</button>
+          </form>
+          <p id="admin_msg" class="success-msg"></p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const loginForm = document.getElementById("adminLoginForm");
+    const msg = document.getElementById("admin_msg");
+
+    loginForm.addEventListener("submit", (e) => {
+      e.preventDefault();
+
+      const user = admin_user.value.trim();
+      const pass = admin_pass.value.trim();
+
+      // YOU CAN CHANGE PASSWORD HERE
+      if (user === "admin" && pass === "1234") {
+        localStorage.setItem("admin_login", "true");
+        window.location.href = "admin_dashboard.html";
+      } else {
+        msg.textContent = "⚠ Incorrect username or password!";
+        msg.style.color = "red";
+        setTimeout(() => (msg.textContent = ""), 3000);
+      }
+    });
+  </script>
+
+</body>
+</html>

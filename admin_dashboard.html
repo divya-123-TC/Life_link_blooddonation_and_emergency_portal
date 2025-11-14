@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>LifeLink — Admin Dashboard</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+
+  <div class="header-bar">
+    <img src="images/small_logo.png" class="logo" />
+    <div class="header-title">Admin Dashboard</div>
+  </div>
+
+  <div class="nav">
+    <a href="index.html">Home</a>
+    <a href="register.html">Register</a>
+    <a href="find.html">Find Donor</a>
+    <a href="emergency.html">Emergency</a>
+    <a href="camp.html">Camps</a>
+    <a href="hospital.html">Hospitals</a>
+    <a href="contact.html">Contact</a>
+    <a href="admin_login.html" class="active">Admin</a>
+  </div>
+
+  <div class="container">
+
+    <!-- Protect dashboard -->
+    <script>
+      if (localStorage.getItem("admin_login") !== "true") {
+        window.location.href = "admin_login.html";
+      }
+    </script>
+
+    <div class="section">
+      <div class="text">
+        <h2>Welcome, Admin</h2>
+        <p class="lead">Manage donors, camps, and hospitals.</p>
+
+        <button class="btn" onclick="logoutAdmin()" style="margin-bottom:20px;">Logout</button>
+
+        <!-- Pending Hospitals -->
+        <h3>Pending Hospital Approvals</h3>
+        <div id="pending_hospitals" class="admin-list"></div>
+
+        <!-- Approved Hospitals -->
+        <h3 style="margin-top:20px;">Approved Hospitals</h3>
+        <div id="approved_hospitals" class="admin-list"></div>
+
+        <!-- Pending Camps -->
+        <h3 style="margin-top:20px;">Pending Camp Approvals</h3>
+        <div id="pending_camps" class="admin-list"></div>
+
+        <!-- Approved Camps -->
+        <h3 style="margin-top:20px;">Approved Camps</h3>
+        <div id="approved_camps" class="admin-list"></div>
+
+        <!-- Donors -->
+        <h3 style="margin-top:20px;">Registered Donors</h3>
+        <div id="donor_list" class="admin-list"></div>
+
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ---------- Logout ----------
+    function logoutAdmin() {
+      localStorage.removeItem("admin_login");
+      window.location.href = "admin_login.html";
+    }
+
+    // ---------- Load Data ----------
+    let pendingHospitals = JSON.parse(localStorage.getItem("pending_hospitals")) || [];
+    let approvedHospitals = JSON.parse(localStorage.getItem("hospitals")) || [];
+
+    let pendingCamps = JSON.parse(localStorage.getItem("pending_camps")) || [];
+    let approvedCamps = JSON.parse(localStorage.getItem("camps")) || [];
+
+    let donors = JSON.parse(localStorage.getItem("donors")) || [];
+
+    // ---------- RENDER FUNCTIONS ----------
+    function renderPendingHospitals() {
+      const box = document.getElementById("pending_hospitals");
+      box.innerHTML = pendingHospitals.length
+        ? ""
+        : "<p>No pending hospital approvals.</p>";
+
+      pendingHospitals.forEach((h, i) => {
+        const div = document.createElement("div");
+        div.className = "card";
+        div.innerHTML = `
+          <h4>${h.name}</h4>
+          <p>📍 ${h.city}</p>
+          <p>☎ ${h.contact}</p>
+          <p>${h.groups}</p>
+          <button class="btn" onclick="approveHospital(${i})">Approve</button>
+          <button class="btn secondary" onclick="deletePendingHospital(${i})">Delete</button>
+        `;
+        box.appendChild(div);
+      });
+    }
+
+    function renderApprovedHospitals() {
+      const box = document.getElementById("approved_hospitals");
+      box.innerHTML = approvedHospitals.length
+        ? ""
+        : "<p>No approved hospitals.</p>";
+
+      approvedHospitals.forEach((h, i) => {
+        const div = document.createElement("div");
+        div.className = "card";
+        div.innerHTML = `
+          <h4>${h.name}</h4>
+          <p>📍 ${h.city}</p>
+          <p>☎ ${h.contact}</p>
+          <p>${h.groups}</p>
+          <button class="btn secondary" onclick="deleteHospital(${i})">Delete</button>
+        `;
+        box.appendChild(div);
+      });
+    }
+
+    function renderPendingCamps() {
+      const box = document.getElementById("pending_camps");
+      box.innerHTML = pendingCamps.length
+        ? ""
+        : "<p>No pending camp approvals.</p>";
+
+      pendingCamps.forEach((c, i) => {
+        const div = document.createElement("div");
+        div.className = "card";
+        div.innerHTML = `
+          <h4>${c.org}</h4>
+          <p>📍 ${c.venue}</p>
+          <p>📅 ${c.date}</p>
+          <p>☎ ${c.contact}</p>
+          <button class="btn" onclick="approveCamp(${i})">Approve</button>
+          <button class="btn secondary" onclick="deletePendingCamp(${i})">Delete</button>
+        `;
+        box.appendChild(div);
+      });
+    }
+
+    function renderApprovedCamps() {
+      const box = document.getElementById("approved_camps");
+      box.innerHTML = approvedCamps.length
+        ? ""
+        : "<p>No approved camps.</p>";
+
+      approvedCamps.forEach((c, i) => {
+        const div = document.createElement("div");
+        div.className = "card";
+        div.innerHTML = `
+          <h4>${c.org}</h4>
+          <p>📍 ${c.venue}</p>
+          <p>📅 ${c.date}</p>
+          <p>☎ ${c.contact}</p>
+          <button class="btn secondary" onclick="deleteCamp(${i})">Delete</button>
+        `;
+        box.appendChild(div);
+      });
+    }
+
+    function renderDonors() {
+      const box = document.getElementById("donor_list");
+      box.innerHTML = donors.length ? "" : "<p>No donors found.</p>";
+
+      donors.forEach((d, i) => {
+        const div = document.createElement("div");
+        div.className = "card";
+        div.innerHTML = `
+          <h4>${d.name}</h4>
+          <p>Blood Group: ${d.group}</p>
+          <p>📍 ${d.city}</p>
+          <p>☎ ${d.contact}</p>
+          <button class="btn secondary" onclick="deleteDonor(${i})">Delete</button>
+        `;
+        box.appendChild(div);
+      });
+    }
+
+    // ---------- APPROVE / DELETE FUNCTIONS ----------
+
+    function approveHospital(i) {
+      approvedHospitals.push(pendingHospitals[i]);
+      pendingHospitals.splice(i, 1);
+      localStorage.setItem("hospitals", JSON.stringify(approvedHospitals));
+      localStorage.setItem("pending_hospitals", JSON.stringify(pendingHospitals));
+      renderPendingHospitals();
+      renderApprovedHospitals();
+    }
+
+    function deletePendingHospital(i) {
+      pendingHospitals.splice(i, 1);
+      localStorage.setItem("pending_hospitals", JSON.stringify(pendingHospitals));
+      renderPendingHospitals();
+    }
+
+    function deleteHospital(i) {
+      approvedHospitals.splice(i, 1);
+      localStorage.setItem("hospitals", JSON.stringify(approvedHospitals));
+      renderApprovedHospitals();
+    }
+
+    function approveCamp(i) {
+      approvedCamps.push(pendingCamps[i]);
+      pendingCamps.splice(i, 1);
+      localStorage.setItem("camps", JSON.stringify(approvedCamps));
+      localStorage.setItem("pending_camps", JSON.stringify(pendingCamps));
+      renderPendingCamps();
+      renderApprovedCamps();
+    }
+
+    function deletePendingCamp(i) {
+      pendingCamps.splice(i, 1);
+      localStorage.setItem("pending_camps", JSON.stringify(pendingCamps));
+      renderPendingCamps();
+    }
+
+    function deleteCamp(i) {
+      approvedCamps.splice(i, 1);
+      localStorage.setItem("camps", JSON.stringify(approvedCamps));
+      renderApprovedCamps();
+    }
+
+    function deleteDonor(i) {
+      donors.splice(i, 1);
+      localStorage.setItem("donors", JSON.stringify(donors));
+      renderDonors();
+    }
+
+    // ---------- INITIAL RENDER ----------
+    renderPendingHospitals();
+    renderApprovedHospitals();
+    renderPendingCamps();
+    renderApprovedCamps();
+    renderDonors();
+
+  </script>
+
+</body>
+</html>
