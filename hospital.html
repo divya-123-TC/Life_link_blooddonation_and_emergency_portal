@@ -20,7 +20,7 @@
     <a href="camp.html">Camps</a>
     <a href="hospital.html" class="active">Hospitals</a>
     <a href="contact.html">Contact</a>
-    <a href="remove_record.html">Remove Record</a>
+    <a href="admin_login.html">Admin Login</a>
   </div>
 
   <div class="container">
@@ -29,31 +29,17 @@
         <h2>Hospitals with Blood Banks</h2>
         <p class="lead">Call any hospital directly for blood availability or emergency help.</p>
 
-        <div id="hosp_list">
-          <div class="card">
-            <h3>CityCare Hospital</h3>
-            <p>📍 Bengaluru</p>
-            <p>☎ 9876543210</p>
-            <p>💉 Blood Groups: A+, O-, B+</p>
-            <a href="tel:9876543210" class="btn call-btn">📞 Call Now</a>
-          </div>
-          <div class="card">
-            <h3>LifeAid Medical Center</h3>
-            <p>📍 Mysuru</p>
-            <p>☎ 9123456789</p>
-            <p>💉 Blood Groups: AB+, O+, B-</p>
-            <a href="tel:9123456789" class="btn call-btn">📞 Call Now</a>
-          </div>
-        </div>
+        <!-- Approved hospitals list (only approved are shown) -->
+        <div id="hosp_list"></div>
 
-        <h3 style="margin-top:20px">Add Hospital (Admin)</h3>
+        <h3 style="margin-top:20px">Request to Add Hospital (will require admin approval)</h3>
         <div class="form-card">
           <form id="hForm">
             <input id="h_name" placeholder="Hospital name" required />
             <input id="h_city" placeholder="City" required />
             <input id="h_contact" placeholder="Contact number" required />
             <input id="h_groups" placeholder="Available groups (comma separated)" />
-            <button type="submit" class="btn">Add Hospital</button>
+            <button type="submit" class="btn">Request Add Hospital</button>
           </form>
           <p id="h_success" class="success-msg"></p>
         </div>
@@ -66,51 +52,67 @@
   </div>
 
   <div class="footer">© 2025 LifeLink</div>
-<script>
-  const hForm = document.getElementById("hForm");
-  const hList = document.getElementById("hosp_list");
-  const hMsg = document.getElementById("h_success");
 
-  function displayHospitals() {
-    hList.innerHTML = "";
-    const hospitals = JSON.parse(localStorage.getItem("hospitals")) || [];
-    hospitals.forEach(h => {
-      const card = document.createElement("div");
-      card.classList.add("card");
-      card.innerHTML = `
-        <h3>${h.name}</h3>
-        <p>📍 ${h.city}</p>
-        <p>☎ ${h.contact}</p>
-        <p>💉 Blood Groups: ${h.groups}</p>
-        <a href="tel:${h.contact}" class="btn call-btn">📞 Call Now</a>
-      `;
-      hList.appendChild(card);
-    });
-  }
+  <script>
+    // Helper
+    const $ = id => document.getElementById(id);
 
-  hForm.addEventListener("submit", (e) => {
-    e.preventDefault();
-    const hospital = {
-      name: hForm.h_name.value,
-      city: hForm.h_city.value,
-      contact: hForm.h_contact.value,
-      groups: hForm.h_groups.value
-    };
+    // Show only approved hospitals from 'hospitals' key
+    function displayHospitals() {
+      const wrap = $("hosp_list");
+      wrap.innerHTML = "";
+      const hospitals = JSON.parse(localStorage.getItem("hospitals")) || [];
 
-    let hospitals = JSON.parse(localStorage.getItem("hospitals")) || [];
-    hospitals.push(hospital);
-    localStorage.setItem("hospitals", JSON.stringify(hospitals));
+      if (hospitals.length === 0) {
+        wrap.innerHTML = '<p>No hospitals listed yet.</p>';
+        return;
+      }
 
-    hMsg.textContent = "✅ Hospital added successfully!";
-    hForm.reset();
+      hospitals.forEach(h => {
+        const card = document.createElement("div");
+        card.className = "card";
+        card.innerHTML = `
+          <h3>${h.name}</h3>
+          <p>📍 ${h.city}</p>
+          <p>☎ ${h.contact}</p>
+          <p>💉 Blood Groups: ${h.groups || "—"}</p>
+          <a href="tel:${h.contact}" class="btn call-btn">📞 Call Now</a>
+        `;
+        wrap.appendChild(card);
+      });
+    }
+
+    // Submit request -> saved to pending_hospitals
+    if ($("hForm")) {
+      $("hForm").addEventListener("submit", (e) => {
+        e.preventDefault();
+        const hospital = {
+          name: $("h_name").value.trim(),
+          city: $("h_city").value.trim(),
+          contact: $("h_contact").value.trim(),
+          groups: $("h_groups").value.trim(),
+          requestedAt: new Date().toISOString()
+        };
+        if (!hospital.name || !hospital.city || !hospital.contact) {
+          $("h_success").textContent = "Please fill name, city and contact.";
+          $("h_success").style.color = "red";
+          setTimeout(()=> $("h_success").textContent = "", 3000);
+          return;
+        }
+
+        const pending = JSON.parse(localStorage.getItem("pending_hospitals")) || [];
+        pending.push(hospital);
+        localStorage.setItem("pending_hospitals", JSON.stringify(pending));
+
+        $("h_success").textContent = "✅ Request submitted — waiting admin approval.";
+        $("h_success").style.color = "green";
+        $("hForm").reset();
+        setTimeout(()=> $("h_success").textContent = "", 3500);
+      });
+    }
+
+    // Initial render of approved hospitals
     displayHospitals();
-    setTimeout(() => (hMsg.textContent = ""), 3000);
-  });
-
-  displayHospitals();
-</script>
-  
+  </script>
 </body>
-
 </html>
-
